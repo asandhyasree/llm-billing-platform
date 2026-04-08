@@ -371,7 +371,3 @@ pytest tests/ -v
 | Unknown model fallback pricing | Add the model to `MODEL_RATES` in `config.py` |
 | Anomaly detection returns empty | Needs at least 7 days of usage history |
 | NL query returns unexpected results | Check that usage events exist; the feature queries `usage_events` table |
-
-## License
-
-MIT License
