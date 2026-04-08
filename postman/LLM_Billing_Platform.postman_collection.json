@@ -1,0 +1,327 @@
+{
+  "info": {
+    "name": "LLM Billing Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "admin_key",
+      "value": "mysecretkey123"
+    },
+    {
+      "key": "tenant_id",
+      "value": ""
+    },
+    {
+      "key": "api_key",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tenants",
+      "item": [
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/tenants",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Client\",\n  \"email\": \"test@example.com\",\n  \"tier\": \"basic\",\n  \"markup_pct\": 20.0\n}"
+            }
+          }
+        },
+        {
+          "name": "List Tenants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/tenants"
+          }
+        },
+        {
+          "name": "Get Tenant",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/tenants/{{tenant_id}}"
+          }
+        },
+        {
+          "name": "Update Tenant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/tenants/{{tenant_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tier\": \"pro\",\n  \"markup_pct\": 15.0\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "Top Up Credits",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/billing/{{tenant_id}}/credits/topup",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount_usd\": 10.0,\n  \"note\": \"Initial credits\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Credits & Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/billing/{{tenant_id}}/credits"
+          }
+        },
+        {
+          "name": "Invoice Preview",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/billing/{{tenant_id}}/invoice/preview?year=2026&month=4",
+              "host": ["{{base_url}}"],
+              "path": ["billing", "{{tenant_id}}", "invoice", "preview"],
+              "query": [
+                { "key": "year", "value": "2026" },
+                { "key": "month", "value": "4" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proxy (LLM Calls)",
+      "item": [
+        {
+          "name": "Chat Completion (OpenAI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-api-key", "value": "{{api_key}}" }
+            ],
+            "url": "{{base_url}}/v1/chat/completions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"gpt-4o-mini\",\n  \"messages\": [\n    { \"role\": \"user\", \"content\": \"What is 2 + 2?\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Chat Completion (Gemini)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-api-key", "value": "{{api_key}}" }
+            ],
+            "url": "{{base_url}}/v1/chat/completions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"gemini-1.5-flash\",\n  \"messages\": [\n    { \"role\": \"user\", \"content\": \"Hello, how are you?\" }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usage",
+      "item": [
+        {
+          "name": "Platform Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/usage/platform-summary"
+          }
+        },
+        {
+          "name": "Platform Daily",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/usage/platform-daily"
+          }
+        },
+        {
+          "name": "Tenant Usage Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usage/{{tenant_id}}/usage?limit=100",
+              "host": ["{{base_url}}"],
+              "path": ["usage", "{{tenant_id}}", "usage"],
+              "query": [
+                { "key": "limit", "value": "100" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Usage By Model",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/usage/{{tenant_id}}/usage/by-model"
+          }
+        },
+        {
+          "name": "Usage By Day",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usage/{{tenant_id}}/usage/by-day?days=30",
+              "host": ["{{base_url}}"],
+              "path": ["usage", "{{tenant_id}}", "usage", "by-day"],
+              "query": [
+                { "key": "days", "value": "30" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Insights",
+      "item": [
+        {
+          "name": "Detect Anomalies",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ai/anomalies/{{tenant_id}}?days=60",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "anomalies", "{{tenant_id}}"],
+              "query": [
+                { "key": "days", "value": "60" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Spend Forecast",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/ai/forecast/{{tenant_id}}"
+          }
+        },
+        {
+          "name": "Combined Insights",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/ai/insights/{{tenant_id}}"
+          }
+        },
+        {
+          "name": "Platform Anomalies",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/ai/platform-anomalies"
+          }
+        },
+        {
+          "name": "Explain Anomaly",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/ai/explain",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anomaly\": {\n    \"date\": \"2026-04-01\",\n    \"total_cost\": 5.23,\n    \"deviation_pct\": 250.0,\n    \"model\": \"gpt-4o\",\n    \"input_tokens\": 50000,\n    \"output_tokens\": 20000\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Natural Language Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-key", "value": "{{admin_key}}" }
+            ],
+            "url": "{{base_url}}/ai/query",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Which model cost the most last week?\",\n  \"tenant_id\": \"{{tenant_id}}\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
